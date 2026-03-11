@@ -5,16 +5,17 @@ import { useEffect, useMemo, useState } from "react";
 type PracticeItem = {
   radical: string;
   code: string;
+  description: string;
 };
 
 const PRACTICE_ITEMS: PracticeItem[] = [
-  { radical: "疒", code: "ab" },
-  { radical: "丁", code: "ad" },
-  { radical: "鬼", code: "ag" },
-  { radical: "乙", code: "ai" },
-  { radical: "音", code: "xy" },
-  { radical: "弓", code: "bg" },
-  { radical: "未", code: "aw" },
+  { radical: "疒", code: "ab", description: "疒字根，编码为 ab。" },
+  { radical: "丁", code: "ad", description: "丁字根，编码为 ad。" },
+  { radical: "鬼", code: "ag", description: "鬼字根，编码为 ag。" },
+  { radical: "乙", code: "ai", description: "乙字根，编码为 ai。" },
+  { radical: "音", code: "xy", description: "音字根，编码为 xy。" },
+  { radical: "弓", code: "bg", description: "弓字根，编码为 bg。" },
+  { radical: "未", code: "aw", description: "未字根，编码为 aw。" },
 ];
 
 export default function Home() {
@@ -24,11 +25,19 @@ export default function Home() {
   );
   const [isWrong, setIsWrong] = useState(false);
   const [showCode, setShowCode] = useState(false);
+  const [showDescription, setShowDescription] = useState(false);
 
   const currentItem = PRACTICE_ITEMS[currentIndex];
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === " ") {
+        event.preventDefault();
+        setShowCode((current) => !current);
+        setShowDescription((current) => !current);
+        return;
+      }
+
       if (isWrong) {
         return;
       }
@@ -97,6 +106,7 @@ export default function Home() {
           setLetters(Array.from({ length: PRACTICE_ITEMS[nextIndex].code.length }, () => ""));
           setIsWrong(false);
           setShowCode(false);
+          setShowDescription(false);
 
           return nextIndex;
         });
@@ -163,6 +173,19 @@ export default function Home() {
           })}
         </div>
 
+        <div
+          className={`fixed right-6 bottom-6 w-[320px] rounded-2xl border border-[#e6ebf4] bg-white/95 p-5 text-left shadow-[0_18px_40px_rgba(124,140,171,0.18)] backdrop-blur transition-all duration-200 ${
+            showDescription
+              ? "pointer-events-auto translate-y-0 opacity-100"
+              : "pointer-events-none translate-y-3 opacity-0"
+          }`}
+        >
+          <div className="mb-2 text-sm font-semibold tracking-[0.08em] text-[#8b9bb4]">提示</div>
+          <div className="mb-3 text-lg font-semibold text-[#5f7394]">
+            {currentItem.radical} · {currentItem.code}
+          </div>
+          <p className="text-sm leading-6 text-[#6f82a0]">{currentItem.description}</p>
+        </div>
       </section>
     </main>
   );
