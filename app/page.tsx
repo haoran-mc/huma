@@ -23,6 +23,7 @@ export default function Home() {
     Array.from({ length: PRACTICE_ITEMS[0].code.length }, () => "")
   );
   const [isWrong, setIsWrong] = useState(false);
+  const [showCode, setShowCode] = useState(false);
 
   const currentItem = PRACTICE_ITEMS[currentIndex];
 
@@ -95,6 +96,7 @@ export default function Home() {
 
           setLetters(Array.from({ length: PRACTICE_ITEMS[nextIndex].code.length }, () => ""));
           setIsWrong(false);
+          setShowCode(false);
 
           return nextIndex;
         });
@@ -106,6 +108,7 @@ export default function Home() {
     }
 
     setIsWrong(true);
+    setShowCode(true);
 
     const resetTimer = window.setTimeout(() => {
       setLetters(Array.from({ length: currentItem.code.length }, () => ""));
@@ -127,7 +130,11 @@ export default function Home() {
             {currentItem.radical}
           </div>
 
-          <div className="mb-6 text-[28px] leading-none font-medium text-[#6d84aa]">
+          <div
+            className={`mb-6 min-h-[28px] text-[28px] leading-none font-medium text-[#6d84aa] transition-opacity ${
+              showCode ? "opacity-100" : "opacity-0"
+            }`}
+          >
             {currentItem.code}
           </div>
         </div>
