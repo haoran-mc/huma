@@ -13,4 +13,4 @@
 - 创建项目：`npx create-next-app@latest huma`，create-next-app 是 Next.js 官方提供的项目脚手架
 - 推荐选项：TypeScript、ESLint、Tailwind CSS、src 目录、App Router、Turbopack
 - 启动项目：`npm run dev`
-- 访问地址：`http://localhost:3000`
+- 访问地址：`http://localhost:9530`
