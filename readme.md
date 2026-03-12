@@ -1,5 +1,3 @@
-# 技术选型
-
 - 框架：Next.js
 - 语言：TypeScript
 - 路由：App Router
