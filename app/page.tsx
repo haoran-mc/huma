@@ -2,19 +2,27 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { PRACTICE_ITEMS } from "@/data/practice-items";
+import { pracAlgorithm } from "@/lib/prac-algorithm";
 
 export default function Home() {
+  // 当前题目的索引。
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // 输入框中的字母数组，长度与当前题目的编码长度保持一致。
   const [letters, setLetters] = useState<string[]>(() =>
     Array.from({ length: PRACTICE_ITEMS[0].code.length }, () => "")
   );
+
+  // 控制错误反馈、编码显示和右下角提示弹窗显示。
   const [isWrong, setIsWrong] = useState(false);
   const [showCode, setShowCode] = useState(false);
   const [showDescription, setShowDescription] = useState(false);
 
+  // 根据当前索引取出正在练习的题目。
   const currentItem = PRACTICE_ITEMS[currentIndex];
 
   useEffect(() => {
+    // 统一监听键盘输入：空格切换提示、退格删除、字母录入。
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === " ") {
         event.preventDefault();
@@ -77,16 +85,18 @@ export default function Home() {
   }, [isWrong]);
 
   useEffect(() => {
+    // 只在编码填满后进行判题。
     if (letters.some((letter) => !letter)) {
       return;
     }
 
     const answer = letters.join("");
 
+    // 答对后按练习算法切换到下一题，并重置当前题目的显示状态。
     if (answer === currentItem.code) {
       const nextQuestionTimer = window.setTimeout(() => {
         setCurrentIndex((current) => {
-          const nextIndex = (current + 1) % PRACTICE_ITEMS.length;
+          const nextIndex = pracAlgorithm(current, PRACTICE_ITEMS.length);
 
           setLetters(Array.from({ length: PRACTICE_ITEMS[nextIndex].code.length }, () => ""));
           setIsWrong(false);
@@ -102,6 +112,7 @@ export default function Home() {
       };
     }
 
+    // 答错后显示编码，并短暂保留红色错误反馈后清空输入。
     setIsWrong(true);
     setShowCode(true);
 
@@ -115,11 +126,13 @@ export default function Home() {
     };
   }, [currentItem.code, letters]);
 
+  // 找到当前应该高亮的输入框位置。
   const activeIndex = useMemo(() => letters.findIndex((letter) => !letter), [letters]);
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#f6f7fb] px-6 py-16">
       <section className="flex w-full max-w-md flex-col items-center justify-center text-center">
+        {/* 题目主体：字根 + 编码（默认隐藏，提示或答错时显示） */}
         <div className={isWrong ? "animate-practice-shake" : ""}>
           <div className="mb-3 text-[64px] leading-none font-medium tracking-[0.08em] text-[#64789c]">
             {currentItem.radical}
@@ -134,6 +147,7 @@ export default function Home() {
           </div>
         </div>
 
+        {/* 只读输入框：实际输入来自全局键盘事件。 */}
         <div className="mb-5 flex items-center gap-4">
           {letters.map((letter, index) => {
             const isActive = activeIndex === index || (activeIndex === -1 && index === letters.length - 1);
@@ -158,6 +172,7 @@ export default function Home() {
           })}
         </div>
 
+        {/* 右下角提示弹窗：按空格后切换显示。 */}
         <div
           className={`fixed right-6 bottom-6 w-[320px] rounded-2xl border border-[#e6ebf4] bg-white/95 p-5 text-left shadow-[0_18px_40px_rgba(124,140,171,0.18)] backdrop-blur transition-all duration-200 ${
             showDescription
