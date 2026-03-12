@@ -134,7 +134,7 @@ export default function Home() {
       <section className="flex w-full max-w-md flex-col items-center justify-center text-center">
         {/* 题目主体：字根 + 编码（默认隐藏，提示或答错时显示） */}
         <div className={isWrong ? "animate-practice-shake" : ""}>
-          <div className="mb-3 text-[64px] leading-none font-medium tracking-[0.08em] text-[#64789c]">
+          <div className="radical-font mb-3 text-[64px] leading-none font-medium tracking-[0.08em] text-[#64789c]">
             {currentItem.radical}
           </div>
 

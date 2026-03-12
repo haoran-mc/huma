@@ -5,6 +5,7 @@ export type PracticeItem = {
 };
 
 export const PRACTICE_ITEMS: PracticeItem[] = [
+  { radical: "疋⺪", code: "ts", description: "" },
   { radical: "疒", code: "ab", description: "疒字根，编码为 ab。" },
   { radical: "丁", code: "ad", description: "丁字根，编码为 ad。" },
   { radical: "鬼", code: "ag", description: "鬼字根，编码为 ag。" },
