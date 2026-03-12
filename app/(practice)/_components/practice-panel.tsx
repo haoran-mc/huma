@@ -27,7 +27,7 @@ export function PracticePanel({
       <section className="relative flex flex-1 items-center justify-center px-6 py-10 md:px-12">
         <div className="flex w-full max-w-md flex-col items-center justify-center text-center">
           <div className={isWrong ? "animate-practice-shake" : ""}>
-            <div className="radical-font mb-3 text-[64px] leading-none font-medium tracking-[0.08em] text-[#64789c] md:text-[88px]">
+            <div className="radical-font mb-3 text-[42px] leading-none font-medium tracking-[0.08em] text-[#64789c]">
               {item.radical}
             </div>
 
