@@ -181,10 +181,29 @@ export default function Home() {
           }`}
         >
           <div className="mb-2 text-sm font-semibold tracking-[0.08em] text-[#8b9bb4]">提示</div>
-          <div className="mb-3 text-lg font-semibold text-[#5f7394]">
-            {currentItem.radical} · {currentItem.code}
+          <div className="mb-4 flex items-center gap-3 text-[#5f7394]">
+            <span className="radical-font text-[28px] leading-none">{currentItem.radical}</span>
+            <span className="text-lg font-semibold">{currentItem.code}</span>
           </div>
-          <p className="text-sm leading-6 text-[#6f82a0]">{currentItem.description}</p>
+
+          <dl className="space-y-3 text-sm leading-6 text-[#6f82a0]">
+            <div>
+              <dt className="font-semibold text-[#8b9bb4]">编码</dt>
+              <dd>{currentItem.code}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-[#8b9bb4]">拼音</dt>
+              <dd>{currentItem.pinyin || "-"}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-[#8b9bb4]">例字</dt>
+              <dd>{currentItem.example || "-"}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-[#8b9bb4]">描述</dt>
+              <dd>{currentItem.description || "-"}</dd>
+            </div>
+          </dl>
         </div>
       </section>
     </main>
