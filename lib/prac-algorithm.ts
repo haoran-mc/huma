@@ -52,13 +52,29 @@ function rebuildBox(
     .filter(({ c }) => c >= 0 && c < MASTERY_COUNT)
     .sort((a, b) => a.c - b.c);
 
-  // 不足时引入新字根
-  let slots = targetSize - pool.length;
-  for (let i = 0; i < next.length && slots > 0; i++) {
-    if (next[i] === -1) {
+  // 不足时从未引入字根中补充：按 succCount 降序，同分组内随机打乱后依次取用
+  const slots = targetSize - pool.length;
+  if (slots > 0) {
+    const locked = next
+      .map((c, i) => ({ i, c }))
+      .filter(({ c }) => c === -1)
+      .sort((a, b) => b.c - a.c);
+
+    // 同分组内 Fisher-Yates 随机打乱
+    let groupStart = 0;
+    while (groupStart < locked.length) {
+      let groupEnd = groupStart + 1;
+      while (groupEnd < locked.length && locked[groupEnd].c === locked[groupStart].c) groupEnd++;
+      for (let k = groupEnd - 1; k > groupStart; k--) {
+        const j = groupStart + Math.floor(Math.random() * (k - groupStart + 1));
+        [locked[k], locked[j]] = [locked[j], locked[k]];
+      }
+      groupStart = groupEnd;
+    }
+
+    for (const { i } of locked.slice(0, slots)) {
       next[i] = 0;
       pool.push({ i, c: 0 });
-      slots--;
     }
   }
 

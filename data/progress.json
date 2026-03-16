@@ -29,7 +29,7 @@
   },
   {
     "index": 7,
-    "succCount": 4
+    "succCount": 8
   },
   {
     "index": 8,
@@ -41,11 +41,11 @@
   },
   {
     "index": 10,
-    "succCount": 5
+    "succCount": 6
   },
   {
     "index": 11,
-    "succCount": 4
+    "succCount": 5
   },
   {
     "index": 12,
@@ -69,7 +69,7 @@
   },
   {
     "index": 17,
-    "succCount": 3
+    "succCount": 6
   },
   {
     "index": 18,
@@ -81,7 +81,7 @@
   },
   {
     "index": 20,
-    "succCount": 3
+    "succCount": 4
   },
   {
     "index": 21,
@@ -97,11 +97,11 @@
   },
   {
     "index": 24,
-    "succCount": 0
+    "succCount": 5
   },
   {
     "index": 25,
-    "succCount": 0
+    "succCount": 3
   },
   {
     "index": 26,
@@ -733,7 +733,7 @@
   },
   {
     "index": 183,
-    "succCount": -1
+    "succCount": 0
   },
   {
     "index": 184,
