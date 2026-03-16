@@ -1,18 +1,45 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { PRACTICE_ITEMS } from "@/data/practice-items";
-import { pracAlgorithm } from "@/lib/prac-algorithm";
+import {
+  PracticeState,
+  createInitialState,
+  isSessionComplete,
+  onCorrect,
+  onWrong,
+  pickNext,
+} from "@/lib/prac-algorithm";
 
 const createEmptyLetters = (code: string) => Array.from({ length: code.length }, () => "");
 
+type Session = {
+  state: PracticeState;
+  currentIndex: number;
+};
+
+function makeInitialSession(): Session {
+  const state = createInitialState(PRACTICE_ITEMS.length);
+  return { state, currentIndex: Math.max(0, pickNext(state)) };
+}
+
 export function usePracticeSession() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [letters, setLetters] = useState<string[]>(() => createEmptyLetters(PRACTICE_ITEMS[0].code));
+  // Initialize session and letters together to guarantee they are consistent.
+  const [{ initSession, initLetters }] = useState(() => {
+    const session = makeInitialSession();
+    return {
+      initSession: session,
+      initLetters: createEmptyLetters(PRACTICE_ITEMS[session.currentIndex].code),
+    };
+  });
+  const [session, setSession] = useState<Session>(() => initSession);
+  const [letters, setLetters] = useState<string[]>(() => initLetters);
   const [isWrong, setIsWrong] = useState(false);
   const [showCode, setShowCode] = useState(false);
   const [showDescription, setShowDescription] = useState(false);
 
+  const { currentIndex, state } = session;
   const currentItem = PRACTICE_ITEMS[currentIndex];
+  const isComplete = isSessionComplete(state);
 
   const toggleHintVisibility = useCallback(() => {
     setShowCode((current) => !current);
@@ -49,23 +76,24 @@ export function usePracticeSession() {
   }, []);
 
   useEffect(() => {
-    if (letters.some((letter) => !letter)) {
-      return;
-    }
+    if (isComplete) return;
+    if (letters.some((letter) => !letter)) return;
 
     const answer = letters.join("");
 
     if (answer === currentItem.code) {
       const nextQuestionTimer = window.setTimeout(() => {
-        setCurrentIndex((current) => {
-          const nextIndex = pracAlgorithm(current, PRACTICE_ITEMS.length);
+        setSession((current) => {
+          const nextState = onCorrect(current.state, current.currentIndex);
+          const nextIndex = pickNext(nextState);
+          const safeIndex = nextIndex >= 0 ? nextIndex : current.currentIndex;
 
-          setLetters(createEmptyLetters(PRACTICE_ITEMS[nextIndex].code));
+          setLetters(createEmptyLetters(PRACTICE_ITEMS[safeIndex].code));
           setIsWrong(false);
           setShowCode(false);
           setShowDescription(false);
 
-          return nextIndex;
+          return { state: nextState, currentIndex: safeIndex };
         });
       }, 180);
 
@@ -80,6 +108,10 @@ export function usePracticeSession() {
     }, 0);
 
     const resetTimer = window.setTimeout(() => {
+      setSession((current) => ({
+        ...current,
+        state: onWrong(current.state, current.currentIndex),
+      }));
       setLetters(createEmptyLetters(currentItem.code));
       setIsWrong(false);
     }, 520);
@@ -88,12 +120,13 @@ export function usePracticeSession() {
       window.clearTimeout(wrongStateTimer);
       window.clearTimeout(resetTimer);
     };
-  }, [currentItem.code, letters]);
+  }, [currentItem.code, isComplete, letters]);
 
   return {
     currentItem,
     letters,
     isWrong,
+    isComplete,
     showCode,
     showDescription,
     toggleHintVisibility,
@@ -101,3 +134,4 @@ export function usePracticeSession() {
     handleLetterInput,
   };
 }
+
