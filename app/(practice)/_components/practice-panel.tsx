@@ -21,7 +21,7 @@ export function PracticePanel({
   showDescription,
 }: PracticePanelProps) {
   return (
-    <div className="relative flex min-h-[min(680px,calc(100vh-120px))] bg-[rgba(251,252,255,0.84)]">
+    <div className="relative flex min-h-[min(580px,calc(100vh-120px))] bg-[rgba(251,252,255,0.84)]">
       <PracticeSidebar />
 
       <section className="relative flex flex-1 items-center justify-center px-6 py-10 md:px-12">

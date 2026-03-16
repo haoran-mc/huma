@@ -4,17 +4,19 @@ type MacOSWindowFrameProps = {
   title: string;
   isDragging?: boolean;
   onTitlePointerDown?: PointerEventHandler<HTMLDivElement>;
+  onPointerDown?: PointerEventHandler<HTMLDivElement>;
   style?: CSSProperties;
   children: ReactNode;
 };
 
 export const MacOSWindowFrame = forwardRef<HTMLDivElement, MacOSWindowFrameProps>(
-  function MacOSWindowFrame({ title, isDragging = false, onTitlePointerDown, style, children }, ref) {
+  function MacOSWindowFrame({ title, isDragging = false, onTitlePointerDown, onPointerDown, style, children }, ref) {
     return (
       <div
         ref={ref}
-        className="absolute left-1/2 top-1/2 z-10 w-[min(960px,calc(100vw-40px))] overflow-hidden rounded-[14px] border border-white/50 bg-[rgba(246,248,252,0.72)] shadow-[0_30px_80px_rgba(7,10,20,0.4)] backdrop-blur-xl"
+        className="absolute left-1/2 top-1/2 z-10 w-[min(860px,calc(100vw-40px))] overflow-hidden rounded-[14px] border border-white/50 bg-[rgba(246,248,252,0.72)] shadow-[0_30px_80px_rgba(7,10,20,0.4)] backdrop-blur-xl"
         style={style}
+        onPointerDown={onPointerDown}
       >
         <div
           className={`flex h-10 items-center border-b border-[#d7dcea] bg-[linear-gradient(180deg,rgba(248,249,252,0.94)_0%,rgba(234,237,245,0.9)_100%)] px-4 ${

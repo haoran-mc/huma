@@ -164,6 +164,7 @@ export function usePracticeSession() {
 
   return {
     currentItem,
+    state,
     letters,
     isWrong,
     isComplete,
