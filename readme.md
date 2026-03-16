@@ -82,3 +82,34 @@ $$\text{boxSize} = \text{round}\!\left(8 + \frac{\overline{\text{succCount}}}{7}
 - **盒子缩小**：`succCount` 较高的字根（相对熟练）被暂时移出，系统集中练习最薄弱的字根；
 - **盒子扩大**：从搁置区中取 `succCount` 较高的字根重新加入，优先引入已有一定基础的字根，而不是全新的字根；
 - 若已引入字根数量不足，则按原始顺序补充尚未引入的字根（`succCount` 初始化为 0）。
+
+# 三、持久化练习进度
+
+每当有字根首次达到 `succCount = 8`（即完全掌握）时，系统自动将当前所有字根的进度持久化到本地文件。
+
+## 存储格式
+
+进度保存在 `data/progress.json`，格式为每个字根的索引与 `succCount` 的数组：
+
+```json
+[
+  { "index": 0, "succCount": 8 },
+  { "index": 1, "succCount": 3 },
+  { "index": 2, "succCount": -1 }
+]
+```
+
+- `succCount = -1`：尚未引入
+- `succCount = 0 ~ 7`：练习中
+- `succCount = 8`：已掌握
+
+## 读写方式
+
+通过 Next.js API 路由 `app/api/progress/route.ts` 进行文件读写：
+
+- `GET /api/progress`：读取 `data/progress.json`，文件不存在时返回空数组
+- `POST /api/progress`：将最新进度写入 `data/progress.json`
+
+## 恢复流程
+
+练习页面挂载时，自动请求 `GET /api/progress`。若存档非空，则从中还原 `counts` 数组，重建 `PracticeState`（包括动态盒子大小计算），并从上次中断处继续练习。

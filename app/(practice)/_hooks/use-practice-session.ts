@@ -1,13 +1,18 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { PRACTICE_ITEMS } from "@/data/practice-items";
 import {
+  MASTERY_COUNT,
+  ProgressEntry,
   PracticeState,
   createInitialState,
+  createStateFromCounts,
+  deserializeProgress,
   isSessionComplete,
   onCorrect,
   onWrong,
   pickNext,
+  serializeProgress,
 } from "@/lib/prac-algorithm";
 
 const createEmptyLetters = (code: string) => Array.from({ length: code.length }, () => "");
@@ -36,6 +41,41 @@ export function usePracticeSession() {
   const [isWrong, setIsWrong] = useState(false);
   const [showCode, setShowCode] = useState(false);
   const [showDescription, setShowDescription] = useState(false);
+
+  // 记录上一次的 counts，用于检测是否有新字根达到 MASTERY_COUNT
+  const prevCountsRef = useRef<number[]>(session.state.counts);
+
+  // 从持久化文件中恢复进度
+  useEffect(() => {
+    fetch("/api/progress")
+      .then((res) => res.json())
+      .then((entries: ProgressEntry[]) => {
+        if (!entries.length) return;
+        const counts = deserializeProgress(entries, PRACTICE_ITEMS.length);
+        const restoredState = createStateFromCounts(counts);
+        const nextIndex = pickNext(restoredState);
+        const safeIndex = nextIndex >= 0 ? nextIndex : 0;
+        prevCountsRef.current = restoredState.counts;
+        setSession({ state: restoredState, currentIndex: safeIndex });
+        setLetters(createEmptyLetters(PRACTICE_ITEMS[safeIndex].code));
+      })
+      .catch(() => {/* 无存档时使用默认初始状态 */});
+  }, []);
+
+  // 每当有新字根达到 MASTERY_COUNT，自动持久化
+  useEffect(() => {
+    const prev = prevCountsRef.current;
+    const curr = session.state.counts;
+    const hasNewMastery = curr.some((c, i) => c >= MASTERY_COUNT && prev[i] < MASTERY_COUNT);
+    if (hasNewMastery) {
+      fetch("/api/progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(serializeProgress(curr)),
+      });
+    }
+    prevCountsRef.current = curr;
+  }, [session.state.counts]);
 
   const { currentIndex, state } = session;
   const currentItem = PRACTICE_ITEMS[currentIndex];

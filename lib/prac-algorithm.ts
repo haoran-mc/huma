@@ -132,3 +132,26 @@ export function onWrong(state: PracticeState, itemIndex: number): PracticeState 
 export function isSessionComplete(state: PracticeState): boolean {
   return state.counts.every((c) => c >= MASTERY_COUNT);
 }
+
+export type ProgressEntry = { index: number; succCount: number };
+
+/** 将 counts 数组序列化为可持久化的格式。 */
+export function serializeProgress(counts: number[]): ProgressEntry[] {
+  return counts.map((succCount, index) => ({ index, succCount }));
+}
+
+/** 从持久化数据还原 counts 数组，超出范围的条目自动忽略。 */
+export function deserializeProgress(entries: ProgressEntry[], total: number): number[] {
+  const counts = Array<number>(total).fill(-1);
+  for (const { index, succCount } of entries) {
+    if (index >= 0 && index < total) counts[index] = succCount;
+  }
+  return counts;
+}
+
+/** 从已有 counts 数组重建完整的 PracticeState（用于从持久化数据恢复）。 */
+export function createStateFromCounts(counts: number[]): PracticeState {
+  const targetSize = computeBoxSize(counts);
+  const { counts: newCounts, activeIndices } = rebuildBox(counts, targetSize);
+  return { counts: newCounts, activeIndices, recentHistory: [] };
+}
